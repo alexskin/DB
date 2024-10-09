@@ -36,7 +36,7 @@
         "./"
     ],
     "license": "PHP-3.01",
-    "name": "pear/db",
+    "name": "pear/db-forked-fits",
     "support": {
         "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=DB",
         "source": "https://github.com/pear/DB"
