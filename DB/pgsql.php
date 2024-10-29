@@ -186,12 +186,12 @@ class DB_pgsql extends DB_common
      * Example of connecting to a new link via a socket:
      * <code>
      * require_once 'DB.php';
-     * 
+     *
      * $dsn = 'pgsql://user:pass@unix(/tmp)/dbname?new_link=true';
      * $options = array(
      *     'portability' => DB_PORTABILITY_ALL,
      * );
-     * 
+     *
      * $db = DB::connect($dsn, $options);
      * if (PEAR::isError($db)) {
      *     die($db->getMessage());
@@ -355,12 +355,12 @@ class DB_pgsql extends DB_common
         } elseif (preg_match('/^\s*\(*\s*(SELECT|EXPLAIN|FETCH|SHOW|WITH)\s/si',
                              $query))
         {
-            $this->row[(int)$result] = 0; // reset the row counter.
+            $this->row[(int)@pg_num_rows($result)] = 0; // reset the row counter.
             $numrows = $this->numRows($result);
             if (is_object($numrows)) {
                 return $numrows;
             }
-            $this->_num_rows[(int)$result] = $numrows;
+            $this->_num_rows[(int)@pg_num_rows($result)] = $numrows;
             $this->affected = 0;
             return $result;
         } else {
@@ -411,7 +411,7 @@ class DB_pgsql extends DB_common
      */
     function fetchInto($result, &$arr, $fetchmode, $rownum = null)
     {
-        $result_int = (int)$result;
+        $result_int = (int)@pg_num_rows($result);
         $rownum = ($rownum !== null) ? $rownum : $this->row[$result_int];
         if ($rownum >= $this->_num_rows[$result_int]) {
             return null;
@@ -479,7 +479,7 @@ class DB_pgsql extends DB_common
     function quoteBoolean($boolean) {
         return $boolean ? 'TRUE' : 'FALSE';
     }
-     
+
     // }}}
     // {{{ escapeSimple()
 
@@ -783,7 +783,7 @@ class DB_pgsql extends DB_common
     /**
      * Gets the DBMS' native error message produced by the last query
      *
-     * {@internal Error messages are used instead of error codes 
+     * {@internal Error messages are used instead of error codes
      * in order to support older versions of PostgreSQL.}}
      *
      * @return string  the DBMS' error message
@@ -905,7 +905,7 @@ class DB_pgsql extends DB_common
             $got_string = false;
         }
 
-        if (!is_resource($id)) {
+        if ($id === false) {
             return $this->pgsqlRaiseError(DB_ERROR_NEED_MORE_DATA);
         }
 
